@@ -27,18 +27,19 @@ Route::post('/user/login', [UserController::class, 'login']);
 Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('/user', [UserController::class, 'all'])->middleware('restrictRole:operator');
     Route::post('/user', [UserController::class, 'store'])->middleware('restrictRole:admin');
-    Route::get('/user/{id}', [UserController::class, 'show'])->middleware(['restrictRole:operator', 'restrictRole:admin']);
+    Route::get('/user/{id}', [UserController::class, 'show'])->middleware('restrictRole:operator,admin');
+    Route::get('/user/search/{name}', [UserController::class, 'search'])->middleware('restrictRole:operator,admin');
 
     Route::get('/role', [RoleController::class, 'all'])->middleware('restrictRole:admin');
     Route::get('/role/{id}', [RoleController::class, 'show'])->middleware('restrictRole:admin');
     Route::get('/role/name/{name}', [RoleController::class, 'byName'])->middleware('restrictRole:admin');
     
-    Route::post('/bus', [BusController::class, 'store'])->middleware(['restrictRole:operator', 'restrictRole:admin']);
+    Route::post('/bus', [BusController::class, 'store'])->middleware('restrictRole:operator,admin');
     Route::patch('/bus/route/{id}', [BusController::class, 'assignRoute'])->middleware('restrictRole:operator');
     Route::patch('/bus/user/{id}', [BusController::class, 'assignDriver'])->middleware('restrictRole:operator');
     
     
-    Route::post('/route', [RouteController::class, 'store'])->middleware(['restrictRole:operator', 'restrictRole:admin']);
+    Route::post('/route', [RouteController::class, 'store'])->middleware('restrictRole:operator,admin');
     Route::put('/route/{id}', [RouteController::class, 'update']);
     Route::patch('/route/buses/{id}', [RouteController::class, 'addBuses'])->middleware('restrictRole:operator');
     Route::get('/route/buses/{id}', [RouteController::class, 'getBusesInRoute'])->middleware('restrictRole:operator');

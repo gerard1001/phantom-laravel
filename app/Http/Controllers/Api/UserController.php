@@ -141,4 +141,22 @@ class UserController extends Controller
             ]);
         };
     }
+
+    public function search($name)
+    {
+        try {
+            $user = User::where('names', 'like', '%'.$name.'%')->get();
+
+            return response()->json([
+                'message' => 'User fetched successfully',
+                'status' => HttpResponse::HTTP_OK,
+                'user' => $user,
+            ]);
+        } catch(Exception $error) {
+            return response()->json([
+                'message' => 'User seach failed',
+                'error' => $error->getMessage(),
+            ]);
+        };
+    }
 }
