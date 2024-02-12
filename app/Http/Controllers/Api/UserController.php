@@ -8,10 +8,44 @@ use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response as HttpResponse;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
+    public function login(Request $request)
+    {
+        $fields = $request->validate([
+    'email' => 'required|string',
+    'password' => 'required|string'
+]);
+
+        // Check email
+        $user = User::where('email', $fields['email'])->first();
+
+        // Check password
+        if(!$user || !Hash::check($fields['password'], $user->password)) {
+            return response([
+                'message' => 'Invalid credentials'
+            ], 401);
+        }
+
+        $token = $user->createToken('myapptoken')->plainTextToken;
+
+        $response = [
+            'user' => $user,
+            'token' => $token
+        ];
+
+        return response()->json([
+            'message' => 'Loggin successful',
+            'status' => HttpResponse::HTTP_CREATED,
+            'user' => $response,
+        ]);
+
+    }
+
     public function store(Request $request)
     {
         try {
