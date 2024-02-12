@@ -21,10 +21,8 @@ class UserController extends Controller
     'password' => 'required|string'
 ]);
 
-        // Check email
-        $user = User::where('email', $fields['email'])->first();
+        $user = User::with('role')->where('email', $fields['email'])->first();
 
-        // Check password
         if(!$user || !Hash::check($fields['password'], $user->password)) {
             return response([
                 'message' => 'Invalid credentials'
@@ -33,15 +31,11 @@ class UserController extends Controller
 
         $token = $user->createToken('myapptoken')->plainTextToken;
 
-        $response = [
-            'user' => $user,
-            'token' => $token
-        ];
-
         return response()->json([
             'message' => 'Loggin successful',
             'status' => HttpResponse::HTTP_CREATED,
-            'user' => $response,
+            'token' => $token,
+            'role' => $user->role->name,
         ]);
 
     }
